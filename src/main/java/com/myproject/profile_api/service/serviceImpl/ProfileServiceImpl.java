@@ -25,7 +25,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     // ================= CREATE PROFILE =================
     @Override
-    public ProfileResponse createProfile(String name) {
+    public ApiResponse<ProfileResponse> createProfile(String name) {
 
         if (name == null || name.trim().isEmpty()) {
             throw new BadRequestException("Missing or empty name");
@@ -34,17 +34,29 @@ public class ProfileServiceImpl implements ProfileService {
         final String normalizedName = name.toLowerCase().trim();
 
         return repository.findByName(normalizedName)
-                .map(this::map)
-                .orElseGet(() -> createNewProfile(normalizedName));
+                .map(profile -> new ApiResponse<>(
+                        "success",
+                        "Profile already exists",
+                        map(profile)
+                ))
+                .orElseGet(() -> {
+                    Profile profile = createNewProfile(normalizedName);
+                    return new ApiResponse<>(
+                            "success",
+                            null,
+                            map(profile)
+                    );
+                });
     }
 
-    private ProfileResponse createNewProfile(String name) {
+    // ================= INTERNAL CREATE =================
+    private Profile createNewProfile(String name) {
 
         GenderResponse gender = getGender(name);
         AgifyResponse age = getAge(name);
         NationalizeResponse nat = getNationality(name);
 
-        // EDGE CASES (502 RULES)
+        // 502 RULES
         if (gender == null || gender.getGender() == null || gender.getCount() == 0) {
             throw new ExternalApiException("Genderize");
         }
@@ -77,9 +89,7 @@ public class ProfileServiceImpl implements ProfileService {
                 .createdAt(Instant.now())
                 .build();
 
-        repository.save(profile);
-
-        return map(profile);
+        return repository.save(profile);
     }
 
     // ================= GET BY ID =================
@@ -114,7 +124,7 @@ public class ProfileServiceImpl implements ProfileService {
         repository.delete(profile);
     }
 
-    // ================= AGE GROUP LOGIC =================
+    // ================= AGE GROUP =================
     private String computeAgeGroup(int age) {
         if (age <= 12) return "child";
         if (age <= 19) return "teenager";
@@ -122,7 +132,7 @@ public class ProfileServiceImpl implements ProfileService {
         return "senior";
     }
 
-    // ================= EXTERNAL APIs =================
+    // ================= EXTERNAL API CALLS =================
     private GenderResponse getGender(String name) {
         return webClient.get()
                 .uri("https://api.genderize.io?name=" + name)
