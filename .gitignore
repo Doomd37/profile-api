@@ -20,7 +20,8 @@ target/
 *.ipr
 
 .idea/
-
+.class
+.jar
 .env
 
 ### NetBeans ###
