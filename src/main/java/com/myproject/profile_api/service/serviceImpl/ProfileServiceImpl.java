@@ -3,6 +3,7 @@ package com.myproject.profile_api.service.serviceImpl;
 import com.myproject.profile_api.Exception.BadRequestException;
 import com.myproject.profile_api.Exception.ExternalApiException;
 import com.myproject.profile_api.Exception.NotFoundException;
+import com.myproject.profile_api.Exception.UnprocessableException;
 import com.myproject.profile_api.dto.*;
 import com.myproject.profile_api.entity.Profile;
 import com.myproject.profile_api.repository.ProfileRepository;
@@ -31,6 +32,10 @@ public class ProfileServiceImpl implements ProfileService {
             throw new BadRequestException("Missing or empty name");
         }
 
+        if (!name.matches("^[a-zA-Z]+$")) {
+            throw new UnprocessableException("Invalid type");
+        }
+
         final String normalizedName = name.toLowerCase().trim();
 
         return repository.findByName(normalizedName)
@@ -42,9 +47,7 @@ public class ProfileServiceImpl implements ProfileService {
                 .orElseGet(() -> {
                     Profile profile = createNewProfile(normalizedName);
                     return new ApiResponse<>(
-                            "success",
-                            null,
-                            map(profile)
+                            "success",map(profile)
                     );
                 });
     }

@@ -4,11 +4,13 @@ import com.myproject.profile_api.dto.ApiResponse;
 import com.myproject.profile_api.dto.ProfileRequest;
 import com.myproject.profile_api.dto.ProfileResponse;
 import com.myproject.profile_api.service.ProfileService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/profiles")
@@ -19,12 +21,15 @@ public class ProfileController {
 
     // ================= CREATE =================
     @PostMapping
-    public ResponseEntity<ApiResponse<ProfileResponse>> create(@RequestBody ProfileRequest req) {
+    public ResponseEntity<ApiResponse<ProfileResponse>> create(@Valid @RequestBody ProfileRequest req) {
 
         ApiResponse<ProfileResponse> response = service.createProfile(req.getName());
 
-        if (response.getMessage() != null &&
-                response.getMessage().equals("Profile already exists")) {
+        boolean exists =
+                response.getMessage() != null &&
+                        response.getMessage().equalsIgnoreCase("Profile already exists");
+
+        if (exists) {
             return ResponseEntity.ok(response); // 200
         }
 
@@ -36,7 +41,7 @@ public class ProfileController {
     public ResponseEntity<ApiResponse<ProfileResponse>> get(@PathVariable String id) {
 
         return ResponseEntity.ok(
-                new ApiResponse<>("success", null, service.getProfileById(id))
+                new ApiResponse<>("success",service.getProfileById(id))
         );
     }
 
@@ -48,9 +53,15 @@ public class ProfileController {
             @RequestParam(required = false) String age_group
     ) {
 
+        List<ProfileResponse> profiles =
+                service.getAllProfiles(gender, country_id, age_group);
+
         return ResponseEntity.ok(
-                new ApiResponse<>("success", null,
-                        service.getAllProfiles(gender, country_id, age_group))
+                ApiResponse.<List<ProfileResponse>>builder()
+                        .status("success")
+                        .count(profiles.size())
+                        .data(profiles)
+                        .build()
         );
     }
 

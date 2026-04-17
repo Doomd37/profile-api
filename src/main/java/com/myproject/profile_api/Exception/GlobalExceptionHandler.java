@@ -1,5 +1,6 @@
 package com.myproject.profile_api.Exception;
 
+import com.myproject.profile_api.dto.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -13,10 +14,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleBadRequest(BadRequestException ex) {
 
         return ResponseEntity.status(400).body(
-                Map.of(
-                        "status", "error",
-                        "message", ex.getMessage()
-                )
+                new ApiResponse<>("error", ex.getMessage(), null)
         );
     }
 
@@ -24,21 +22,40 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleNotFound(NotFoundException ex) {
 
         return ResponseEntity.status(404).body(
-                Map.of(
-                        "status", "error",
-                        "message", ex.getMessage()
-                )
+                new ApiResponse<>("error", ex.getMessage(), null)
         );
     }
 
     @ExceptionHandler(ExternalApiException.class)
-    public ResponseEntity<?> handleExternalApi(ExternalApiException ex) {
+    public ResponseEntity<ApiResponse<Object>> handleExternalApi(ExternalApiException ex) {
 
         return ResponseEntity.status(502).body(
-                Map.of(
-                        "status", "error",
-                        "message", ex.getMessage() + " returned an invalid response"
+                new ApiResponse<>(
+                        "error",
+                        ex.getMessage() + " returned an invalid response",
+                        null
                 )
+        );
+    }
+
+    @ExceptionHandler(UnprocessableException.class)
+    public ResponseEntity<ApiResponse<Object>> handleUnprocessable(UnprocessableException ex) {
+
+        return ResponseEntity.status(422).body(
+                new ApiResponse<>(
+                        "error",
+                        ex.getMessage(),
+                        null
+                )
+        );
+    }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse<Object>> handleGeneric(Exception ex) {
+
+        return ResponseEntity.status(500).body(
+                new ApiResponse<>("error",
+                        "Upstream or server error",
+                        null)
         );
     }
 
