@@ -11,7 +11,7 @@ It stores results in PostgreSQL and exposes CRUD endpoints.
 ---
 
 ## Tech Stack
-- Java 21
+- Java 17+
 - Spring Boot
 - Spring Data JPA
 - PostgreSQL
