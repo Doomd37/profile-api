@@ -24,7 +24,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final ProfileRepository repository;
     private final WebClient webClient;
 
-    // ================= CREATE PROFILE =================
+    // CREATE PROFILE
     @Override
     public ApiResponse<ProfileResponse> createProfile(String name) {
 
@@ -52,7 +52,7 @@ public class ProfileServiceImpl implements ProfileService {
                 });
     }
 
-    // ================= INTERNAL CREATE =================
+    //  INTERNAL CREATE
     private Profile createNewProfile(String name) {
 
         GenderResponse gender = getGender(name);
@@ -95,7 +95,7 @@ public class ProfileServiceImpl implements ProfileService {
         return repository.save(profile);
     }
 
-    // ================= GET BY ID =================
+    // GET BY ID
     @Override
     public ProfileResponse getProfileById(String id) {
 
@@ -105,7 +105,7 @@ public class ProfileServiceImpl implements ProfileService {
         return map(profile);
     }
 
-    // ================= GET ALL + FILTER =================
+    // GET ALL + FILTER
     @Override
     public List<ProfileResponse> getAllProfiles(String gender, String countryId, String ageGroup) {
 
@@ -117,7 +117,7 @@ public class ProfileServiceImpl implements ProfileService {
                 .toList();
     }
 
-    // ================= DELETE =================
+    // DELETE
     @Override
     public void deleteProfile(String id) {
 
@@ -127,7 +127,7 @@ public class ProfileServiceImpl implements ProfileService {
         repository.delete(profile);
     }
 
-    // ================= AGE GROUP =================
+    // AGE GROUP
     private String computeAgeGroup(int age) {
         if (age <= 12) return "child";
         if (age <= 19) return "teenager";
@@ -135,7 +135,7 @@ public class ProfileServiceImpl implements ProfileService {
         return "senior";
     }
 
-    // ================= EXTERNAL API CALLS =================
+    // EXTERNAL API CALLS
     private GenderResponse getGender(String name) {
         return webClient.get()
                 .uri("https://api.genderize.io?name=" + name)
@@ -160,7 +160,7 @@ public class ProfileServiceImpl implements ProfileService {
                 .block();
     }
 
-    // ================= MAPPER =================
+    // MAPPER
     private ProfileResponse map(Profile p) {
         return ProfileResponse.builder()
                 .id(p.getId())

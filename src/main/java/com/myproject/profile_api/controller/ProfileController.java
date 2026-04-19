@@ -19,7 +19,7 @@ public class ProfileController {
 
     private final ProfileService service;
 
-    // ================= CREATE =================
+    // CREATE
     @PostMapping
     public ResponseEntity<ApiResponse<ProfileResponse>> create(@Valid @RequestBody ProfileRequest req) {
 
@@ -36,7 +36,7 @@ public class ProfileController {
         return ResponseEntity.status(201).body(response); // 201
     }
 
-    // ================= GET BY ID =================
+    // GET BY ID
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<ProfileResponse>> get(@PathVariable String id) {
 
@@ -45,7 +45,7 @@ public class ProfileController {
         );
     }
 
-    // ================= GET ALL =================
+    // GET ALL
     @GetMapping
     public ResponseEntity<ApiResponse<List<ProfileResponse>>> all(
             @RequestParam(required = false) String gender,
@@ -65,7 +65,7 @@ public class ProfileController {
         );
     }
 
-    // ================= DELETE =================
+    // DELETE
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id) {
 
