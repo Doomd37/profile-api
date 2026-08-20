@@ -11,14 +11,20 @@
 	<groupId>com.myproject</groupId>
 	<artifactId>profile-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name/>
-	<description/>
-	<url/>
+	<name>Profile API</name>
+	<description>Spring Boot REST API for building user profiles by integrating external APIs</description>
+	<url>https://github.com/emmanuel-40/profile-api</url>
 	<licenses>
-		<license/>
+		<license>
+			<name>MIT License</name>
+			<url>https://opensource.org/licenses/MIT</url>
+		</license>
 	</licenses>
 	<developers>
-		<developer/>
+		<developer>
+			<name>Eze Emmanuel</name>
+			<url>https://github.com/emmanuel-40</url>
+		</developer>
 	</developers>
 	<scm>
 		<connection/>
